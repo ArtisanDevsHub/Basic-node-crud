@@ -1,7 +1,6 @@
 const {MongoClient} = require('mongodb');
-const {mongoConn} = require('./connectionDetails');
 
-const conString = `mongodb+srv://${mongoConn.userid}:${mongoConn.password}@azure-cluster.qmuovmn.mongodb.net/?retryWrites=true&w=majority&appName=azure-cluster`
+const conString = process.env.DATABASE_URL;
 
 const client =  new MongoClient(conString);
 

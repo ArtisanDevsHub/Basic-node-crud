@@ -1,92 +1,31 @@
+require('dotenv').config();
 const express = require('express');
 const app = express();
 const layout = require('express-ejs-layouts');
 const path = require('node:path');
-
 const {connect, getDb} = require('./data/dbConnection');
+const noteController = require('./controller/noteController');
 
 connect();
 
-const notes = require('./data/data');
 const { ObjectId } = require('mongodb');
 
+console.log(process.env.DB_PORT);
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static("path.join(__dirname, 'public')"));
 app.use(express.urlencoded({ extended: true })); 
 app.set('view engine', 'ejs');
 app.use(layout);
-//app.set('views', './views')
+//app.set('views', './viewsFolder')
+
+
+require('./route')(app);
+
+
 
 app.get('/', (req, res)=>{
     res.render('index');
 });
-
-app.get('/notes/create', (req, res)=>{
-    res.render('notes/create');
-});
-
-app.get('/notes/:id', async (req, res)=>{
-    
-    let collection = getDb().collection('notes');
-    let note  = await collection.findOne({"_id": new ObjectId(req.params.id)})
-
-    if(!note)
-        res.status(404).send('Note not found');
-    res.render('notes/view', {note: note});
-});
-
-app.get('/notes', async (req, res)=>{
-
-    let collection = getDb().collection('notes');
-    const notes = await collection.find().toArray();
-
-    res.render('notes/index', {notes: notes})
-});
-
-
-
-app.get('/notes/:id/edit', async(req, res)=>{
-    
-    const collection = getDb().collection('notes');
-    var note = await collection.findOne({"_id": new ObjectId(req.params.id)});
-
-    res.render('notes/edit', {note: note});
-});
-
-
-
-app.post('/notes/create', async (req, res)=>{
-    
-    let note = {};
-    note.title = req.body.title;
-    note.body = req.body.body;
-    note.isCompleted = false;
-
-    let collection = getDb().collection('notes');
-
-    await collection.insertOne(note);
-    res.redirect('/notes');
-});
-
-
-app.post('/notes/:id/delete', async (req, res)=>{
-    const collection = getDb().collection('notes');
-    var noteToDelete = await collection.findOne({"_id": new ObjectId(req.params.id)});
-    const deletedNote = await collection.deleteOne(noteToDelete);
-    console.log(deletedNote);
-    res.redirect('/notes');
-});
-
-app.post('/notes/:id/edit', async (req, res)=>{
-    const collection = getDb().collection('notes');
-    var note = await collection.findOne({"_id": new ObjectId(req.params.id)});
-    note.title = req.body.title? req.body.title: note.title;
-    note.body = req.body.body? req.body.body: note.body;
-    note.isCompleted = req.body.isCompleted? req.body.isCompleted : note.isCompleted;
-    collection.replaceOne({_id: note._id}, note);
-    res.redirect(`/notes/${note._id}`);
-});
-
 
 
 

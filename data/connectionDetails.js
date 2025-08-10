@@ -1,6 +1,6 @@
 const mongoConn = {
-    userid: '',
-    password: ''
+    userid: 'srsadek',
+    password: 'node-practise_95'
 }
 
 module.exports = {mongoConn};
