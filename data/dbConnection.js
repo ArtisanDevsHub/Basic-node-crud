@@ -1,23 +1,21 @@
-const {MongoClient} = require('mongodb');
-
+const mongoose = require('mongoose');
 const conString = process.env.DATABASE_URL;
 
-const client =  new MongoClient(conString);
 
-let db;
-
-
-const connect = async () =>{
-   await client.connect();
-   db = client.db('notesApp'); 
-   console.log("Mongo db is connected...");
-}
-
-const getDb = ()=>{
-    if (!db){
-        connect();
+const connectDb = async () =>{
+   
+    if(mongoose.connection.readyState == 1)return;
+    
+    try{
+        await mongoose.connect(conString);
+        console.log("Mongo db is connected...");
     }
-    return db;
+    catch(e){
+        console.log('Error connecting to mongodb server');
+    }
 }
 
-module.exports = {connect, getDb};
+module.exports = {connectDb};
+
+
+

@@ -1,5 +1,5 @@
-const {connect, getDb} = require('../data/dbConnection');
 const { ObjectId } = require('mongodb');
+const NoteModel = require('../models/noteModel');
 
 
 
@@ -7,15 +7,12 @@ const { ObjectId } = require('mongodb');
 
 const  showNoteList = async (req, res)=>{
 
-    let collection = getDb().collection('notes');
-    const notes = await collection.find().toArray();
+    const notes = await NoteModel.find();
     res.render('notes/index', {notes: notes})
 }
 
 const showSingleNote = async (req, res)=>{
-    let collection = getDb().collection('notes');
-    let note  = await collection.findOne({"_id": ObjectId.createFromHexString(req.params.id)});
-
+    let note  = await NoteModel.findById(req.params.id);
     if(!note)
         res.status(404).send('Note not found');
     res.render('notes/view', {note: note});
@@ -24,44 +21,53 @@ const showSingleNote = async (req, res)=>{
 
 //CREATE NOTE
 const createNote = async (req, res) => {
-  let note = {};
+  
+    let note = new NoteModel();
   note.title = req.body.title;
   note.body = req.body.body;
   note.isCompleted = false;
-
-  let collection = getDb().collection("notes");
-
-  await collection.insertOne(note);
+  try{
+  await note.save();
   res.redirect("/notes");
+  }
+  catch(e){
+      let msg = e.message.replaceAll('Path', '');
+      res.send(msg)
+  }
 };
 
 
 // EDIT
 const  editNote = async (req, res) =>{
-    const collection = getDb().collection('notes');
-    var note = await collection.findOne({"_id": new ObjectId(req.params.id)});
-    note.title = req.body.title? req.body.title: note.title;
-    note.body = req.body.body? req.body.body: note.body;
-    note.isCompleted = req.body.isCompleted? req.body.isCompleted : note.isCompleted;
-    collection.replaceOne({_id: note._id}, note);
+
+    let note  = await NoteModel.findById(req.params.id);
+    
+    note.title = req.body.title;
+    note.body = req.body.body;
+    note.isCompleted = false;
+
+    await note.save();
+
     res.redirect(`/notes/${note._id}`);
 }
 
 
 const  showEditPage = async (req, res) =>{
-    
-    const collection = getDb().collection('notes');
-    var note = await collection.findOne({"_id": new ObjectId(req.params.id)});
 
+    let note  = await NoteModel.findById(req.params.id);
+    if(!note)
+        res.status(404).send('Note not found');
+    
     res.render('notes/edit', {note: note});
 };
 
 
 // DELETE Note
 const  deleteNote = async (req, res) =>{
-    const collection = getDb().collection('notes');
-    var noteToDelete = await collection.findOne({"_id": new ObjectId(req.params.id)});
-    const deletedNote = await collection.deleteOne(noteToDelete);
+    console.log('hello');
+    let note  = await NoteModel.findById(req.params.id);
+    console.log(note);
+    await note.deleteOne({_id: new ObjectId(req.params.id)});
     res.redirect('/notes');
 }
 
