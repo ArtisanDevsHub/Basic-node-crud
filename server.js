@@ -13,7 +13,7 @@ const { ObjectId } = require('mongodb');
 // console.log(process.env.DB_PORT);
 
 app.use(session({
-    secret: 'your_secret_key', // Used to sign the session ID cookie
+    secret: process.env.SESSION_SECRET, // Used to sign the session ID cookie
     resave: false, // Don't save session if unmodified
     saveUninitialized: false, // Don't create session until something is stored
     cookie: { 
@@ -26,10 +26,10 @@ app.use(session({
 
 app.use(express.static("path.join(__dirname, 'public')"));
 app.use(express.urlencoded({ extended: true })); 
+app.use(express.json());
 app.set('view engine', 'ejs');
 app.use(layout);
 //app.set('views', './viewsFolder')
-
 
 require('./route')(app);
 

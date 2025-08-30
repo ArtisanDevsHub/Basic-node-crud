@@ -8,7 +8,10 @@ const NoteModel = require('../models/noteModel');
 const  showNoteList = async (req, res)=>{
 
     const notes = await NoteModel.find();
-    res.render('notes/index', {notes: notes})
+
+    let currentUser = req.session.user;
+    res.send(req.session.user);
+    // res.render('notes/index', {notes: notes, user: currentUser})
 }
 
 const showSingleNote = async (req, res)=>{

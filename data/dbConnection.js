@@ -4,9 +4,11 @@ const conString = process.env.DATABASE_URL;
 
 const connectDb = async () =>{
    
+    
     if(mongoose.connection.readyState == 1)return;
     
     try{
+        console.log('hello');
         await mongoose.connect(conString);
         console.log("Mongo db is connected...");
     }
