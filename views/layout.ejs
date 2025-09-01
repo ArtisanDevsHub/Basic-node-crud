@@ -9,6 +9,10 @@
 </head>
 <body>
   <div class="container main-container mt-4">
+  <div class="signin-info">
+    <form action="/users/user-login" method="POST"><button type="submit" class="btn btn-info btn-sm me-1">Login</a></form>
+    <form action="/users/user-logout" method="POST"><button type="submit"  class="btn btn-info btn-sm me-1">Logout</a></form>
+  </div>
     <%- body %>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

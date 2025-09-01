@@ -10,19 +10,16 @@ connectDb();
 
 const { ObjectId } = require('mongodb');
 
-// console.log(process.env.DB_PORT);
-
 app.use(session({
     secret: process.env.SESSION_SECRET, // Used to sign the session ID cookie
     resave: false, // Don't save session if unmodified
     saveUninitialized: false, // Don't create session until something is stored
     cookie: { 
-        secure: true, // Requires HTTPS
+        secure: false, // Requires HTTPS
         httpOnly: true, // Prevents client-side JavaScript access
-        maxAge: 1000 * 60 // Session expiration time in milliseconds (1 min)
+        maxAge: 1000 * 60 * 10 // Session expiration time in milliseconds (1 min)
     }
 }));
-
 
 app.use(express.static("path.join(__dirname, 'public')"));
 app.use(express.urlencoded({ extended: true })); 

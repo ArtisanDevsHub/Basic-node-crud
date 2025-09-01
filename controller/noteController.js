@@ -7,14 +7,24 @@ const NoteModel = require('../models/noteModel');
 
 const  showNoteList = async (req, res)=>{
 
-    const notes = await NoteModel.find();
-
     let currentUser = req.session.user;
-    res.send(req.session.user);
-    // res.render('notes/index', {notes: notes, user: currentUser})
+    if(!currentUser)
+        res.redirect('/users/user-login');
+
+    let username = currentUser.username;
+    const notes = await NoteModel.find({userId: currentUser._id});
+
+    res.render('notes/index', {notes: notes, user : currentUser})
 }
 
 const showSingleNote = async (req, res)=>{
+    
+    let currentUser = req.session.user;
+    if(!currentUser)
+        res.redirect('/users/user-login');
+
+    let username = currentUser.username;
+    
     let note  = await NoteModel.findById(req.params.id);
     if(!note)
         res.status(404).send('Note not found');
@@ -25,10 +35,15 @@ const showSingleNote = async (req, res)=>{
 //CREATE NOTE
 const createNote = async (req, res) => {
   
-    let note = new NoteModel();
+let currentUser = req.session.user;
+if(!currentUser)
+    res.redirect('/users/user-login');
+
+  let note = new NoteModel();
   note.title = req.body.title;
   note.body = req.body.body;
   note.isCompleted = false;
+  note.userId = currentUser._id
   try{
   await note.save();
   res.redirect("/notes");
@@ -67,7 +82,6 @@ const  showEditPage = async (req, res) =>{
 
 // DELETE Note
 const  deleteNote = async (req, res) =>{
-    console.log('hello');
     let note  = await NoteModel.findById(req.params.id);
     console.log(note);
     await note.deleteOne({_id: new ObjectId(req.params.id)});

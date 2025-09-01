@@ -24,17 +24,26 @@ router.get('/user-login',(req, res)=>{
 
 
 router.post('/user-login', async (req, res)=>{
+    let msg  = 'username or password is not matching';
+    
     const {username, password} = req.body;
+    
     let user = await UserModel.findOne({username});
-    let isMatch = passwordHandler.isPasswordMatching(password, user.password);
+    if (!user)
+        res.send(msg);
+
+    let isMatch = await passwordHandler.isPasswordMatching(password, user.password);
     if(!isMatch)
-        res.send('password is not matching');
+        res.send(msg);
+
     req.session.user = user;
 
-    req.session.save((err) => {
-        if (err) return res.status(500).send('Session save error');
-    });
     res.redirect('/notes');
+});
+
+router.post('/user-logout', async (req, res)=>{
+    req.session.destroy();
+    res.redirect('/user-login');
 });
 
 
