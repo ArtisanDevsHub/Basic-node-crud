@@ -3,7 +3,7 @@ const { hashPassword } = require('../utils/passwordHandler');
 
 const userSchema = new Schema(
     {
-        username : {type: String, required: true},
+        username : {type: String, required: true, unique: [true, "User name is already taken"]},
         email: {
             type: String,
             required :[true, "Please provide email"],

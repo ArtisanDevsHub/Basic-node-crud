@@ -6,29 +6,20 @@ const NoteModel = require('../models/noteModel');
 //SHOW ALL NOTES
 
 const  showNoteList = async (req, res)=>{
-
     let currentUser = req.session.user;
-    if(!currentUser)
-        res.redirect('/users/user-login');
-
-    let username = currentUser.username;
     const notes = await NoteModel.find({userId: currentUser._id});
-
     res.render('notes/index', {notes: notes, user : currentUser})
+
+
 }
 
 const showSingleNote = async (req, res)=>{
     
     let currentUser = req.session.user;
-    if(!currentUser)
-        res.redirect('/users/user-login');
-
-    let username = currentUser.username;
-    
     let note  = await NoteModel.findById(req.params.id);
     if(!note)
         res.status(404).send('Note not found');
-    res.render('notes/view', {note: note});
+    res.render('notes/view', {note: note, user: currentUser});
 }
 
 
@@ -36,8 +27,6 @@ const showSingleNote = async (req, res)=>{
 const createNote = async (req, res) => {
   
 let currentUser = req.session.user;
-if(!currentUser)
-    res.redirect('/users/user-login');
 
   let note = new NoteModel();
   note.title = req.body.title;
@@ -57,9 +46,8 @@ if(!currentUser)
 
 // EDIT
 const  editNote = async (req, res) =>{
-
-    let note  = await NoteModel.findById(req.params.id);
     
+    let note  = await NoteModel.findById(req.params.id);
     note.title = req.body.title;
     note.body = req.body.body;
     note.isCompleted = false;
@@ -72,23 +60,22 @@ const  editNote = async (req, res) =>{
 
 const  showEditPage = async (req, res) =>{
 
+    let currentUser = req.session.user;    
+
     let note  = await NoteModel.findById(req.params.id);
     if(!note)
         res.status(404).send('Note not found');
     
-    res.render('notes/edit', {note: note});
+    res.render('notes/edit', {note: note, user: currentUser});
 };
 
 
 // DELETE Note
 const  deleteNote = async (req, res) =>{
     let note  = await NoteModel.findById(req.params.id);
-    console.log(note);
     await note.deleteOne({_id: new ObjectId(req.params.id)});
     res.redirect('/notes');
 }
-
-
 
 module.exports = {
     showNoteList,

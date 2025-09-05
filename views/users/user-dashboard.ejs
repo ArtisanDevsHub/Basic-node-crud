@@ -1,0 +1,54 @@
+ <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark mt-1">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">MyApp</a>
+      <div class="d-flex">
+        <span class="navbar-text text-white me-3">
+          Welcome, <%= user.username %>
+        </span>
+        <form action="/users/user-logout" method="POST">
+          <button class="btn btn-outline-light btn-sm" type="submit">Logout</button>
+        </form>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Dashboard Content -->
+  <div class="container mt-4">
+    <h2 class="mb-4">Dashboard</h2>
+
+    <div class="row">
+      <!-- Example Card 1 -->
+      <div class="col-md-4">
+        <div class="card text-bg-primary mb-3">
+          <div class="card-body">
+            <h5 class="card-title">Your Notes</h5>
+            <p class="card-text">View and manage your saved notes.</p>
+            <a href="/notes" class="btn btn-light btn-sm">Go to Notes</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Example Card 2 -->
+      <div class="col-md-4">
+        <div class="card text-bg-success mb-3">
+          <div class="card-body">
+            <h5 class="card-title">Profile</h5>
+            <p class="card-text">Update your account information.</p>
+            <a href="/users/profile" class="btn btn-light btn-sm">Edit Profile</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Example Card 3 -->
+      <div class="col-md-4">
+        <div class="card text-bg-warning mb-3">
+          <div class="card-body">
+            <h5 class="card-title">Settings</h5>
+            <p class="card-text">Customize your preferences.</p>
+            <a href="/settings" class="btn btn-light btn-sm">Settings</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

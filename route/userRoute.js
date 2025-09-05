@@ -1,50 +1,19 @@
 const express = require('express');
 const UserModel = require('../models/userModel');
 const router = express.Router();
-const passwordHandler = require('../utils/passwordHandler');
-
-
+const userController = require('../controller/userController');
+const {isAuthenticated} = require('../middleware/authMiddleware');
 
 
 router.get('/user-signup',(req, res)=> res.render('users/signup'));
+router.get('/user-login',(req, res)=>res.render('users/login'));
 
+router.get('/user-dashboard', isAuthenticated, userController.showUserDashboard);
 
-router.post('/user-create', async (req, res)=>{
-    let user = UserModel(req.body);
-    await user.save();
-    req.session.user = user;
-    res.redirect('/notes');
+router.post('/user-create', userController.createUser);
 
-});
+router.post('/user-login', userController.logUserin);
 
-router.get('/user-login',(req, res)=>{
-    //show login page
-    res.render('users/login');
-});
-
-
-router.post('/user-login', async (req, res)=>{
-    let msg  = 'username or password is not matching';
-    
-    const {username, password} = req.body;
-    
-    let user = await UserModel.findOne({username});
-    if (!user)
-        res.send(msg);
-
-    let isMatch = await passwordHandler.isPasswordMatching(password, user.password);
-    if(!isMatch)
-        res.send(msg);
-
-    req.session.user = user;
-
-    res.redirect('/notes');
-});
-
-router.post('/user-logout', async (req, res)=>{
-    req.session.destroy();
-    res.redirect('/user-login');
-});
-
+router.post('/user-logout', userController.logUserOut);
 
 module.exports = router;
